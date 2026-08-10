@@ -1,0 +1,21 @@
+services:
+  mysql:
+    image: mysql:8
+    restart: unless-stopped
+    ports:
+      - '${DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-jobhub_password}
+      MYSQL_DATABASE: ${DB_DATABASE:-jobhub}
+      MYSQL_USER: ${DB_USERNAME:-jobhub}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-jobhub_password}
+    volumes:
+      - jobhub_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  jobhub_mysql_data:

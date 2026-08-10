@@ -52,7 +52,7 @@ src/
 │   ├── database/              # TypeORM DataSource, base repository
 │   ├── logger/                # Logger provider/config
 │   └── cache/                 # Redis/cache module (if/when added)
-└── features/
+└── modules/
     ├── auth/                  # refresh_tokens; login/refresh/logout
     ├── users/                 # users
     ├── admins/                # admins
@@ -63,14 +63,14 @@ src/
 ```
 
 - `shared/` vs `core/` distinction is functional, see §6.
-- Every folder under `features/` maps directly to a "Feature" section in `DATABASE.md`.
+- Every folder under `modules/` maps directly to a "Feature" section in `DATABASE.md`.
 
 ---
 
 ## 3. Feature Anatomy
 
 ```
-features/jobs/
+modules/jobs/
 ├── jobs.controller.ts     # routing, DTO validation, calls service, maps to ResponseDto
 ├── jobs.service.ts        # business logic (e.g. status transitions, approval rules)
 ├── jobs.repository.ts     # TypeORM queries only — no business logic
