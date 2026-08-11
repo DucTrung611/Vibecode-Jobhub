@@ -17,4 +17,24 @@ export class AdminsRepository {
   findById(id: number): Promise<Admin | null> {
     return this.repository.findOne({ where: { id } });
   }
+
+  async findAndCount(skip: number, take: number): Promise<[Admin[], number]> {
+    return this.repository.findAndCount({
+      skip,
+      take,
+      order: { id: 'ASC' },
+    });
+  }
+
+  create(data: Partial<Admin>): Admin {
+    return this.repository.create(data);
+  }
+
+  save(admin: Admin): Promise<Admin> {
+    return this.repository.save(admin);
+  }
+
+  async softDelete(id: number): Promise<void> {
+    await this.repository.softDelete(id);
+  }
 }

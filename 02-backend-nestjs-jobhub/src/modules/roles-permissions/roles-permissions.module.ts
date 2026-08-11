@@ -1,14 +1,23 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Permission } from './entities/permission.entity';
 import { Role } from './entities/role.entity';
+import { RolePermission } from './entities/role-permission.entity';
+import { PermissionsRepository } from './permissions.repository';
+import { RolePermissionsRepository } from './role-permissions.repository';
+import { RolesPermissionsController } from './roles-permissions.controller';
+import { RolesPermissionsService } from './roles-permissions.service';
+import { RolesRepository } from './roles.repository';
 
-/**
- * Minimal slice for Phase 1: only the `roles` table, needed to satisfy
- * `admins.role_id` FK. Full roles-permissions feature (permissions,
- * role_permissions, RolesGuard, /admin/roles endpoints) lands in Phase 2.
- */
 @Module({
-  imports: [TypeOrmModule.forFeature([Role])],
-  exports: [TypeOrmModule],
+  imports: [TypeOrmModule.forFeature([Role, Permission, RolePermission])],
+  controllers: [RolesPermissionsController],
+  providers: [
+    RolesPermissionsService,
+    RolesRepository,
+    PermissionsRepository,
+    RolePermissionsRepository,
+  ],
+  exports: [RolesPermissionsService],
 })
 export class RolesPermissionsModule {}

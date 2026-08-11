@@ -9,20 +9,19 @@ describe('UsersService', () => {
   let service: UsersService;
   let repository: jest.Mocked<UsersRepository>;
 
-  const buildUser = (overrides: Partial<User> = {}): User =>
-    ({
-      id: 1,
-      fullName: 'Jane Doe',
-      email: 'jane@example.com',
-      passwordHash: 'hashed',
-      phone: null,
-      resumeUrl: null,
-      isActive: true,
-      deletedAt: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      ...overrides,
-    }) as User;
+  const buildUser = (overrides: Partial<User> = {}): User => ({
+    id: 1,
+    fullName: 'Jane Doe',
+    email: 'jane@example.com',
+    passwordHash: 'hashed',
+    phone: null,
+    resumeUrl: null,
+    isActive: true,
+    deletedAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -61,7 +60,7 @@ describe('UsersService', () => {
       expect(repository.create).toHaveBeenCalledWith(
         expect.objectContaining({ email: 'jane@example.com' }),
       );
-      const passedHash = repository.create.mock.calls[0][0]!.passwordHash!;
+      const passedHash = repository.create.mock.calls[0][0].passwordHash!;
       expect(await bcrypt.compare('password123', passedHash)).toBe(true);
       expect(result).toBe(created);
     });
@@ -114,7 +113,10 @@ describe('UsersService', () => {
       repository.findById.mockResolvedValue(user);
       repository.save.mockImplementation((u) => Promise.resolve(u));
 
-      const result = await service.updateResumeUrl(1, '/uploads/resumes/foo.pdf');
+      const result = await service.updateResumeUrl(
+        1,
+        '/uploads/resumes/foo.pdf',
+      );
 
       expect(result.resumeUrl).toBe('/uploads/resumes/foo.pdf');
     });

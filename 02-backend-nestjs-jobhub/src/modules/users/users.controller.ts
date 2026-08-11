@@ -8,7 +8,6 @@ import {
   HttpStatus,
   Patch,
   Post,
-  UseGuards,
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
@@ -16,7 +15,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { CurrentUser } from '../../shared/decorators/current-user.decorator';
-import { JwtAuthGuard } from '../../shared/guards/jwt-auth.guard';
 import type { AuthenticatedPrincipal } from '../../core/auth/strategies/jwt.strategy';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -25,8 +23,8 @@ import { UsersService } from './users.service';
 const RESUME_MAX_BYTES = 5 * 1024 * 1024;
 const RESUME_ALLOWED_EXT = ['.pdf', '.doc', '.docx'];
 
+/** No @Public()/@RequirePermission() — RolesGuard (global) requires just a valid token. */
 @Controller('users/me')
-@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

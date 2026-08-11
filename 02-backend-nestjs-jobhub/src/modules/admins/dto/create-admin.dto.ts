@@ -1,0 +1,26 @@
+import {
+  IsEmail,
+  IsInt,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+
+export class CreateAdminDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(150)
+  fullName: string;
+
+  @IsEmail()
+  @MaxLength(190)
+  email: string;
+
+  @IsString()
+  @MinLength(8)
+  @MaxLength(72)
+  password: string;
+
+  @IsInt()
+  roleId: number;
+}

@@ -21,46 +21,45 @@ describe('AuthService', () => {
   const PASSWORD = 'password123';
   let passwordHash: string;
 
-  const buildUser = (overrides: Partial<User> = {}): User =>
-    ({
-      id: 1,
-      fullName: 'Jane Doe',
-      email: 'jane@example.com',
-      passwordHash,
-      phone: null,
-      resumeUrl: null,
-      isActive: true,
-      deletedAt: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      ...overrides,
-    }) as User;
+  const buildUser = (overrides: Partial<User> = {}): User => ({
+    id: 1,
+    fullName: 'Jane Doe',
+    email: 'jane@example.com',
+    passwordHash,
+    phone: null,
+    resumeUrl: null,
+    isActive: true,
+    deletedAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  });
 
-  const buildAdmin = (overrides: Partial<Admin> = {}): Admin =>
-    ({
-      id: 1,
-      fullName: 'Admin One',
-      email: 'admin@jobhub.com',
-      passwordHash,
-      roleId: 1,
-      isActive: true,
-      deletedAt: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      ...overrides,
-    }) as Admin;
+  const buildAdmin = (overrides: Partial<Admin> = {}): Admin => ({
+    id: 1,
+    fullName: 'Admin One',
+    email: 'admin@jobhub.com',
+    passwordHash,
+    roleId: 1,
+    isActive: true,
+    deletedAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  });
 
-  const buildRefreshToken = (overrides: Partial<RefreshToken> = {}): RefreshToken =>
-    ({
-      id: 1,
-      ownerId: 1,
-      ownerType: 'user',
-      tokenHash: 'hash',
-      expiresAt: new Date(Date.now() + 60_000),
-      revokedAt: null,
-      createdAt: new Date(),
-      ...overrides,
-    }) as RefreshToken;
+  const buildRefreshToken = (
+    overrides: Partial<RefreshToken> = {},
+  ): RefreshToken => ({
+    id: 1,
+    ownerId: 1,
+    ownerType: 'user',
+    tokenHash: 'hash',
+    expiresAt: new Date(Date.now() + 60_000),
+    revokedAt: null,
+    createdAt: new Date(),
+    ...overrides,
+  });
 
   beforeAll(async () => {
     passwordHash = await bcrypt.hash(PASSWORD, 10);
@@ -72,7 +71,11 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: UsersService,
-          useValue: { findByEmail: jest.fn(), findByIdOrThrow: jest.fn(), register: jest.fn() },
+          useValue: {
+            findByEmail: jest.fn(),
+            findByIdOrThrow: jest.fn(),
+            register: jest.fn(),
+          },
         },
         {
           provide: AdminsService,
@@ -82,7 +85,9 @@ describe('AuthService', () => {
           provide: RefreshTokensRepository,
           useValue: {
             findByHash: jest.fn(),
-            create: jest.fn((data: Partial<RefreshToken>) => data as RefreshToken),
+            create: jest.fn(
+              (data: Partial<RefreshToken>) => data as RefreshToken,
+            ),
             save: jest.fn((token: RefreshToken) => Promise.resolve(token)),
           },
         },
@@ -94,7 +99,11 @@ describe('AuthService', () => {
           provide: ConfigService,
           useValue: {
             get: jest.fn((key: string) =>
-              key === 'jwt.refreshTtlSeconds' ? 604800 : key === 'jwt.accessTtlSeconds' ? 900 : undefined,
+              key === 'jwt.refreshTtlSeconds'
+                ? 604800
+                : key === 'jwt.accessTtlSeconds'
+                  ? 900
+                  : undefined,
             ),
           },
         },
@@ -112,10 +121,17 @@ describe('AuthService', () => {
     it('issues a token pair when the email/password matches a user', async () => {
       usersService.findByEmail.mockResolvedValue(buildUser());
 
-      const result = await service.login({ email: 'jane@example.com', password: PASSWORD });
+      const result = await service.login({
+        email: 'jane@example.com',
+        password: PASSWORD,
+      });
 
       expect(jwtService.sign).toHaveBeenCalledWith({ sub: 1, type: 'user' });
-      expect(result.user).toEqual({ id: 1, fullName: 'Jane Doe', email: 'jane@example.com' });
+      expect(result.user).toEqual({
+        id: 1,
+        fullName: 'Jane Doe',
+        email: 'jane@example.com',
+      });
       expect(result.expiresIn).toBe(900);
     });
 
@@ -123,7 +139,10 @@ describe('AuthService', () => {
       usersService.findByEmail.mockResolvedValue(null);
       adminsService.findByEmail.mockResolvedValue(buildAdmin());
 
-      const result = await service.login({ email: 'admin@jobhub.com', password: PASSWORD });
+      const result = await service.login({
+        email: 'admin@jobhub.com',
+        password: PASSWORD,
+      });
 
       expect(jwtService.sign).toHaveBeenCalledWith({ sub: 1, type: 'admin' });
       expect(result.user.email).toBe('admin@jobhub.com');
@@ -136,7 +155,10 @@ describe('AuthService', () => {
       await expect(
         service.login({ email: 'nobody@example.com', password: PASSWORD }),
       ).rejects.toMatchObject(
-        new UnauthorizedException({ code: 'AUTH_001', message: 'Invalid credentials' }),
+        new UnauthorizedException({
+          code: 'AUTH_001',
+          message: 'Invalid credentials',
+        }),
       );
     });
 
@@ -144,9 +166,15 @@ describe('AuthService', () => {
       usersService.findByEmail.mockResolvedValue(buildUser());
 
       await expect(
-        service.login({ email: 'jane@example.com', password: 'wrong-password' }),
+        service.login({
+          email: 'jane@example.com',
+          password: 'wrong-password',
+        }),
       ).rejects.toMatchObject(
-        new UnauthorizedException({ code: 'AUTH_001', message: 'Invalid credentials' }),
+        new UnauthorizedException({
+          code: 'AUTH_001',
+          message: 'Invalid credentials',
+        }),
       );
     });
   });
@@ -168,7 +196,10 @@ describe('AuthService', () => {
       refreshTokensRepository.findByHash.mockResolvedValue(null);
 
       await expect(service.refresh('unknown-token')).rejects.toMatchObject(
-        new UnauthorizedException({ code: 'AUTH_002', message: 'Refresh token expired or invalid' }),
+        new UnauthorizedException({
+          code: 'AUTH_002',
+          message: 'Refresh token expired or invalid',
+        }),
       );
     });
 
@@ -178,7 +209,10 @@ describe('AuthService', () => {
       );
 
       await expect(service.refresh('revoked-token')).rejects.toMatchObject(
-        new UnauthorizedException({ code: 'AUTH_002', message: 'Refresh token expired or invalid' }),
+        new UnauthorizedException({
+          code: 'AUTH_002',
+          message: 'Refresh token expired or invalid',
+        }),
       );
     });
 
@@ -188,7 +222,10 @@ describe('AuthService', () => {
       );
 
       await expect(service.refresh('expired-token')).rejects.toMatchObject(
-        new UnauthorizedException({ code: 'AUTH_002', message: 'Refresh token expired or invalid' }),
+        new UnauthorizedException({
+          code: 'AUTH_002',
+          message: 'Refresh token expired or invalid',
+        }),
       );
     });
   });
