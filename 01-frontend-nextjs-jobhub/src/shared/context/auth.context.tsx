@@ -25,6 +25,16 @@ export interface AuthSession {
 interface AuthContextValue {
   isLoggedIn: boolean;
   isAdminAccount: boolean;
+  /**
+   * False until the one-time cookie hydration effect below has run. Pages
+   * that redirect unauthenticated visitors (e.g. `/profile`) must wait for
+   * this before checking `isLoggedIn` — on mount, a child component's
+   * effect fires *before* this provider's own effect, so `isLoggedIn` is
+   * still `false` (not yet hydrated) the first time a child effect reads
+   * it, which previously caused a false "not logged in" redirect on every
+   * hard page load/reload even for an actually-logged-in session.
+   */
+  isAuthReady: boolean;
   user: SessionUser | null;
   accessToken: string | null;
   refreshToken: string | null;
@@ -38,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [user, setUser] = useState<SessionUser | null>(null);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
     // One-time hydration from an external system (cookies) unavailable
@@ -46,7 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = getCookie(ACCESS_TOKEN_COOKIE);
     const refresh = getCookie(REFRESH_TOKEN_COOKIE);
     const userRaw = getCookie(USER_COOKIE);
-    if (!token || !refresh || !userRaw) return;
+    if (!token || !refresh || !userRaw) {
+      setIsAuthReady(true);
+      return;
+    }
     try {
       setAccessToken(token);
       setRefreshToken(refresh);
@@ -55,6 +69,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       deleteCookie(ACCESS_TOKEN_COOKIE);
       deleteCookie(REFRESH_TOKEN_COOKIE);
       deleteCookie(USER_COOKIE);
+    } finally {
+      setIsAuthReady(true);
     }
   }, []);
 
@@ -80,13 +96,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       isLoggedIn: accessToken !== null,
       isAdminAccount: user?.type === "admin",
+      isAuthReady,
       user,
       accessToken,
       refreshToken,
       setSession,
       clearSession,
     }),
-    [accessToken, refreshToken, user],
+    [accessToken, refreshToken, user, isAuthReady],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { assignDefined } from '../../shared/utils/object.util';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
@@ -52,7 +53,7 @@ export class UsersService {
 
   async updateMe(id: number, dto: UpdateUserDto): Promise<User> {
     const user = await this.findByIdOrThrow(id);
-    Object.assign(user, dto);
+    assignDefined(user, dto);
     return this.usersRepository.save(user);
   }
 
@@ -65,5 +66,9 @@ export class UsersService {
   async deactivate(id: number): Promise<void> {
     await this.findByIdOrThrow(id);
     await this.usersRepository.softDelete(id);
+  }
+
+  count(): Promise<number> {
+    return this.usersRepository.count();
   }
 }

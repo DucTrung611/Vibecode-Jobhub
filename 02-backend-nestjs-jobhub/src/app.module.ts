@@ -12,7 +12,11 @@ import { JwtCoreModule } from './core/auth/jwt-core.module';
 import { DatabaseModule } from './core/database/database.module';
 import { RolesGuard } from './shared/guards/roles.guard';
 import { AdminsModule } from './modules/admins/admins.module';
+import { ApplicationsModule } from './modules/applications/applications.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CompaniesModule } from './modules/companies/companies.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { JobsModule } from './modules/jobs/jobs.module';
 import { RolesPermissionsModule } from './modules/roles-permissions/roles-permissions.module';
 import { UsersModule } from './modules/users/users.module';
 
@@ -30,6 +34,10 @@ import { UsersModule } from './modules/users/users.module';
     UsersModule,
     AdminsModule,
     AuthModule,
+    CompaniesModule,
+    JobsModule,
+    ApplicationsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: RolesGuard }],

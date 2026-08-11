@@ -3,6 +3,7 @@ import { getCookie } from "@/shared/utils/cookie.util";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api/v1";
 const ACCESS_TOKEN_COOKIE = "jobhub_access_token";
+const HTTP_NO_CONTENT = 204;
 
 /**
  * Cookie-based, not a React hook, so it also works server-side once
@@ -54,6 +55,12 @@ async function request<T>(
           ? (options.body as FormData)
           : JSON.stringify(options.body),
   });
+
+  // 204 No Content (e.g. DELETE) has no body — res.json() would throw on
+  // the empty string rather than returning something falsy.
+  if (res.status === HTTP_NO_CONTENT) {
+    return { success: true, data: undefined as T };
+  }
 
   const json = (await res.json()) as ApiSuccessResponse<T> | ApiErrorResponse;
 

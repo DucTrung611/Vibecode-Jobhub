@@ -6,6 +6,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { RolesPermissionsService } from '../roles-permissions/roles-permissions.service';
 import { PaginatedResult } from '../../shared/types/api-response.type';
+import { assignDefined } from '../../shared/utils/object.util';
 import {
   buildPaginationMeta,
   normalizePagination,
@@ -85,7 +86,7 @@ export class AdminsService {
       await this.rolesPermissionsService.roleExistsOrThrow(dto.roleId);
     }
 
-    Object.assign(admin, dto);
+    assignDefined(admin, dto);
     return this.adminsRepository.save(admin);
   }
 

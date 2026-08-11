@@ -29,4 +29,8 @@ export class UsersRepository {
   async softDelete(id: number): Promise<void> {
     await this.repository.softDelete(id);
   }
+
+  count(): Promise<number> {
+    return this.repository.count();
+  }
 }
