@@ -11,4 +11,6 @@ export default registerAs('database', (): TypeOrmModuleOptions => ({
   autoLoadEntities: true,
   synchronize: false,
   charset: 'utf8mb4_unicode_ci',
+  migrations: [__dirname + '/../core/database/migrations/*{.ts,.js}'],
+  migrationsRun: false,
 }));

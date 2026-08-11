@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+:root {
+  --color-void: #150f2e;
+  --color-paper: #f6f4fc;
+  --color-signal: #ff5630;
+  --color-meridian: #5b4cfb;
+  --color-momentum: #ffb800;
+  --color-mist: #e4e1f0;
+  --color-text-secondary: #6e6889;
+  --color-text-body: #3a3557;
+  --color-hairline: #f0eef7;
+
+  --color-status-draft-bg: #edebf5;
+  --color-status-draft-fg: #6e6889;
+  --color-status-open-bg: #e9f7f1;
+  --color-status-open-fg: #1f9d6b;
+  --color-status-closed-bg: #fbeaec;
+  --color-status-closed-fg: #d6394b;
+  --color-status-pending-bg: #fff6e0;
+  --color-status-pending-fg: #b27700;
+  --color-status-reviewing-bg: #eeebfe;
+  --color-status-reviewing-fg: #5b4cfb;
+}
+
+@theme inline {
+  --color-void: var(--color-void);
+  --color-paper: var(--color-paper);
+  --color-signal: var(--color-signal);
+  --color-meridian: var(--color-meridian);
+  --color-momentum: var(--color-momentum);
+  --color-mist: var(--color-mist);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-body: var(--color-text-body);
+  --color-hairline: var(--color-hairline);
+
+  --color-status-draft-bg: var(--color-status-draft-bg);
+  --color-status-draft-fg: var(--color-status-draft-fg);
+  --color-status-open-bg: var(--color-status-open-bg);
+  --color-status-open-fg: var(--color-status-open-fg);
+  --color-status-closed-bg: var(--color-status-closed-bg);
+  --color-status-closed-fg: var(--color-status-closed-fg);
+  --color-status-pending-bg: var(--color-status-pending-bg);
+  --color-status-pending-fg: var(--color-status-pending-fg);
+  --color-status-reviewing-bg: var(--color-status-reviewing-bg);
+  --color-status-reviewing-fg: var(--color-status-reviewing-fg);
+
+  --font-display: var(--font-bricolage-grotesque);
+  --font-body: var(--font-plus-jakarta-sans);
+  --font-mono: var(--font-ibm-plex-mono);
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-text-body);
+  font-family: var(--font-body), sans-serif;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
